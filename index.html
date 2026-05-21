@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>icosahedral</title>
+    <style>
+      #content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+      }
+
+      #the-canvas {
+        border: 1px solid black;
+        height: 600px;
+        width: 600px;
+      }
+
+      #params {
+        display: grid;
+        column-gap: 1em;
+        row-gap: 0.5em;
+        grid-template-columns: repeat(3, max-content);
+        align-items: start;
+        align-content: start;
+        justify-content: start;
+        justify-items: start;
+        > input[type=range] {
+          width: 400px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Some polyhedra with icosahedral symmetry</h1>
+    <div id="content">
+      <canvas id="the-canvas"></canvas>
+      <div id="params">
+        <label for="figure">figure</label>
+        <select id="figure">
+          <option selected>icosahedron</option>
+          <option>dodecahedron</option>
+        </select>
+        <span></span>
+
+        <label for="interpolate">interpolate</label>
+        <input id="interpolate" type="range" min="0" max="1" step="0.001" value="0">
+        <output id="interpolate-out"></output>
+
+        <label for="edges">edges</label>
+        <input id="edges" type="checkbox">
+        <span></span>
+
+        <label for="faces">faces</label>
+        <input id="faces" type="checkbox" checked>
+        <span></span>
+
+        <label for="axes">axes</label>
+        <input id="axes" type="checkbox">
+        <span></span>
+      </div>
+    </div>
+    <script type="module" src="src/main.ts"></script>
+  </body>
+</html>
