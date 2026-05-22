@@ -24,9 +24,9 @@ function checkboxSig(selectors: string) {
 }
 
 const figureSig = selectSig("#figure");
-const interpolateSig = rangeSig("#interpolate");
-const interpolateOut = document.querySelector<HTMLOutputElement>("#interpolate-out")!;
-S.effect(() => { interpolateOut.value = interpolateSig.value.toFixed(3); });
+const transformSig = rangeSig("#transform");
+const transformOut = document.querySelector<HTMLOutputElement>("#transform-out")!;
+S.effect(() => { transformOut.value = transformSig.value.toFixed(3); });
 const edgesSig = checkboxSig("#edges");
 const facesSig = checkboxSig("#faces");
 const axesSig = checkboxSig("#axes");
@@ -36,8 +36,8 @@ const r5 = Math.sqrt(5);
 const φ    = 0.5 * (r5 + 1);
 const φRev = 0.5 * (-r5 + 1);
 const φSig = S.computed(() =>
-  interpolateSig.value       * φRev +
-  (1 - interpolateSig.value) * φ
+  transformSig.value       * φRev +
+  (1 - transformSig.value) * φ
 );
 
 // We do not compute φInvSig as 1 / φSig using the interpolated value φSig.
@@ -47,8 +47,8 @@ const φSig = S.computed(() =>
 // linear interpolation between these two vertices (using some Babylon helper function).
 // For this showPolyhedron takes a function 
 const φInvSig = S.computed(() =>
-  interpolateSig.value       / φRev +
-  (1 - interpolateSig.value) / φ
+  transformSig.value       / φRev +
+  (1 - transformSig.value) / φ
 );
 
 
