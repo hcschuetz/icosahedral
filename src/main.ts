@@ -123,29 +123,37 @@ function showEdges(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
   });
 }
 
+const center = (vertices: V3[]): V3 =>
+  vertices.reduce((sum, vertex) => sum.addInPlace(vertex), V3.Zero())
+  .scaleInPlace(1 / vertices.length);
+
 function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: number[][]) {
+  const vertexPositions = () => [
+    ...verticesSig.value.flatMap(v => v.asArray()),
+    // Add the face centers so we can triangulate faces around the centers:
+    ...faces.flatMap(face =>
+      center(face.map(idx => verticesSig.value[idx])).asArray()
+    ),
+  ];
   asgn(
     new B.Mesh("mesh", scene),
     m => {
       asgn(
         new B.VertexData(), {
-          positions: verticesSig.value.flatMap(v => v.asArray()),
-          indices: faces.flatMap(face =>
-            Array.from({length: face.length - 2}, (_, i) => [
+          positions: vertexPositions(),
+          indices: faces.flatMap((face, j) => {
+            const center = verticesSig.value.length + j;
+            return Array.from(face, (_, i) => [
+              center,
               face[i],
-              face[i+1],
-              face.at(-1)!,
-            ]).flat()
-          ),
+              face[(i+1) % face.length],
+            ]).flat();
+          }),
         },
       ).applyToMesh(m, true);
       S.effect(() => { m.isVisible = sig.value && facesSig.value; });
-      // TODO S.computed for `verticesSig.value.flatMap(v => v.asArray())`?
       S.effect(() => {
-        m.updateVerticesData(
-          B.VertexBuffer.PositionKind,
-          verticesSig.value.flatMap(v => v.asArray()),
-        );
+        m.updateVerticesData(B.VertexBuffer.PositionKind, vertexPositions());
       });
     },
     {material},
@@ -241,11 +249,6 @@ showPolyhedron(
     [15, 2,  8, 0,  9],
     [18, 7, 17, 5, 12],
     [12, 4, 14, 6, 18],
-    // With interpolateSig.value = 0 these are pentagons, which we can draw
-    // correctly.  With interpolateSig.value = 1 these will be pentagrams,
-    // which my current polygon-drawing algorithm doesn't draw correctly.
-    // It expects a (plane and) convex polygon.
-    // TODO Support pentagrams and other non-convex (but plane) polygons? How?
   ],
 );
 
