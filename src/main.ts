@@ -25,13 +25,31 @@ function checkboxSig(selectors: string) {
 
 const figureSig = selectSig("#figure");
 const interpolateSig = rangeSig("#interpolate");
+const interpolateOut = document.querySelector<HTMLOutputElement>("#interpolate-out")!;
+S.effect(() => { interpolateOut.value = interpolateSig.value.toFixed(3); });
 const edgesSig = checkboxSig("#edges");
 const facesSig = checkboxSig("#faces");
 const axesSig = checkboxSig("#axes");
-// TODO use interpolateSig; more shapes;
 
-const φ = 0.5 * (1 + Math.sqrt(5));
-const φinv = 0.5 * (-1 + Math.sqrt(5));
+
+const r5 = Math.sqrt(5);
+const φ    = 0.5 * (r5 + 1);
+const φRev = 0.5 * (-r5 + 1);
+const φSig = S.computed(() =>
+  interpolateSig.value       * φRev +
+  (1 - interpolateSig.value) * φ
+);
+
+// We do not compute φInvSig as 1 / φSig using the interpolated value φSig.
+// We rather interpolate it linearly between 1 / φ and 1 / φRev.
+// This ensures that vertices move linearly as well.
+// TODO Compute each vertex twice, namely based on φ and φRev.  Then perform a
+// linear interpolation between these two vertices (using some Babylon helper function).
+// For this showPolyhedron takes a function 
+const φInvSig = S.computed(() =>
+  interpolateSig.value       / φRev +
+  (1 - interpolateSig.value) / φ
+);
 
 
 type V3 = B.Vector3;
@@ -61,15 +79,15 @@ const material = asgn(
   },
 );
 
-function showVertices(sig: S.Signal<boolean>, vertices: V3[]) {
-  vertices.forEach((v, i) => {
+function showVertices(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>) {
+  verticesSig.value.forEach((_, i) => {
     asgn(
       B.CreateSphere("vertex_" + i, {
         segments: 6,
         diameter: 0.04,
       }),
       s => {
-        s.position = v;
+        S.effect(() => { s.position = verticesSig.value[i]; });
         S.effect(() => { s.isVisible = sig.value && edgesSig.value; })
       },
       {material},
@@ -77,31 +95,41 @@ function showVertices(sig: S.Signal<boolean>, vertices: V3[]) {
   });
 }
 
-function showEdges(sig: S.Signal<boolean>, vertices: V3[], faces: number[][]) {
+function showEdges(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: number[][]) {
   new Map(faces.flatMap(face => face.map((p, i) => {
     const q = face.at(i-1)!;
     const pair = p < q ? [p, q] : [q, p];
     return [pair.join("-"), pair] as [string, [number, number]];
   })))
-  .forEach(indices => asgn(
-    B.CreateTube("edge", {
-      path: indices.map(i => vertices[i]),
-      radius: 0.02,
-    }),
-    {material},
-    t => {
-      S.effect(() => { t.isVisible = sig.value && edgesSig.value; });
-    }
-  ));
+  .forEach(indices => {
+    // TODO re-use the path object, just with new values
+    asgn(
+      B.CreateTube("edge", {
+        path: indices.map(i => verticesSig.value[i]),
+        radius: 0.02,
+        updatable: true,
+      }),
+      {material},
+      t => {
+        S.effect(() => { t.isVisible = sig.value && edgesSig.value; });
+        S.effect(() => {
+          B.CreateTube("edge", {
+            instance: t,
+            path: indices.map(i => verticesSig.value[i]),
+          })
+        });
+      }
+    );
+  });
 }
 
-function showFaces(sig: S.Signal<boolean>, vertices: V3[], faces: number[][]) {
+function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: number[][]) {
   asgn(
     new B.Mesh("mesh", scene),
     m => {
       asgn(
         new B.VertexData(), {
-          positions: vertices.flatMap(v => v.asArray()),
+          positions: verticesSig.value.flatMap(v => v.asArray()),
           indices: faces.flatMap(face =>
             Array.from({length: face.length - 2}, (_, i) => [
               face[i],
@@ -110,14 +138,21 @@ function showFaces(sig: S.Signal<boolean>, vertices: V3[], faces: number[][]) {
             ]).flat()
           ),
         },
-      ).applyToMesh(m);
+      ).applyToMesh(m, true);
       S.effect(() => { m.isVisible = sig.value && facesSig.value; });
+      // TODO S.computed for `verticesSig.value.flatMap(v => v.asArray())`?
+      S.effect(() => {
+        m.updateVerticesData(
+          B.VertexBuffer.PositionKind,
+          verticesSig.value.flatMap(v => v.asArray()),
+        );
+      });
     },
     {material},
   );
 }
 
-function showPolyhedron(name: string, vertices: V3[], faces: number[][]) {
+function showPolyhedron(name: string, verticesSig: S.Signal<V3[]>, faces: number[][]) {
   // console.log(
   //   name + "\n" +
   //   vertices.map((v, i) =>
@@ -126,19 +161,21 @@ function showPolyhedron(name: string, vertices: V3[], faces: number[][]) {
   //   ).join("\n"),
   // );
   const sig = S.computed(() => figureSig.value === name);
-  showVertices(sig, vertices);
-  showEdges(sig, vertices, faces);
-  showFaces(sig, vertices, faces);
+  showVertices(sig, verticesSig);
+  showEdges(sig, verticesSig, faces);
+  showFaces(sig, verticesSig, faces);
 }
 
 showPolyhedron(
   "icosahedron",
-  [1, -1].flatMap(a =>
-    [φ, -φ].flatMap(b => [
-      v3(a, b, 0),
-      v3(0, a, b),
-      v3(b, 0, a),
-    ])
+  S.computed(() =>
+    [1, -1].flatMap(a =>
+      [φSig.value, -φSig.value].flatMap(b => [
+        v3(a, b, 0),
+        v3(0, a, b),
+        v3(b, 0, a),
+      ])
+    ),
   ),
   // TODO generate faces sytematically?
   [
@@ -170,7 +207,7 @@ showPolyhedron(
 
 showPolyhedron(
   "dodecahedron",
-  [
+  S.computed(() => [
     ... // 0..7
     [1, -1].flatMap(a =>
       [1, -1].flatMap(b =>
@@ -180,14 +217,14 @@ showPolyhedron(
       )
     ),
     ... // 8..19
-    [φinv, -φinv].flatMap(a =>
-      [φ, -φ].flatMap(b => [
+    [φInvSig.value, -φInvSig.value].flatMap(a =>
+      [φSig.value, -φSig.value].flatMap(b => [
         v3(a, 0, b),
         v3(b, a, 0),
         v3(0, b, a),
       ])
-    )
-  ],
+    ),
+  ]),
   // TODO generate faces sytematically?
   [
     [16, 1,  9, 0, 10],
@@ -204,8 +241,16 @@ showPolyhedron(
     [15, 2,  8, 0,  9],
     [18, 7, 17, 5, 12],
     [12, 4, 14, 6, 18],
+    // With interpolateSig.value = 0 these are pentagons, which we can draw
+    // correctly.  With interpolateSig.value = 1 these will be pentagrams,
+    // which my current polygon-drawing algorithm doesn't draw correctly.
+    // It expects a (plane and) convex polygon.
+    // TODO Support pentagrams and other non-convex (but plane) polygons? How?
   ],
 );
+
+// TODO more shapes
+// (in particular some other stellated icosahedron; same vertices but different triangles)
 
 
 const axisShape = [
