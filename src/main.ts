@@ -64,7 +64,7 @@ asgn(new B.ArcRotateCamera("camera", 0, 0, 0, V3.ZeroReadOnly, scene), c => {
   c.setPosition(v3(2, 3, -8));
   c.setTarget(V3.Zero());
   c.attachControl(canvasEl);
-});
+}, {lowerRadiusLimit: 1});
 
 // asgn(new B.HemisphericLight("light", v3(0, 1, 0), scene), {intensity: 1});
 asgn(new B.PointLight("light1", v3( 10,  10,  10), scene), {intensity: .7});
