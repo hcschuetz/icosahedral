@@ -119,7 +119,7 @@ const getCenter = (vertices: V3[]): V3 =>
 function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: number[][]) {
   const getPositions = () => [
     ...verticesSig.value,
-    // Add the face centers so we can triangulate faces around the centers:
+    // Add face centers so we can triangulate faces around them:
     ...faces.map(face => getCenter(face.map(idx => verticesSig.value[idx]))),
   ].flatMap(v => v.asArray());
   asgn(
