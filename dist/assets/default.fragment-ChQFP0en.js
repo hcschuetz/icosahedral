@@ -1,4 +1,4 @@
-import{a as e,i as ee,n as te,o as ne,r as re,t as ie}from"./mainUVVaryingDeclaration-DjF5BppP.js";import{t}from"./index-D8tAAHAt.js";var n=`clipPlaneFragmentDeclaration`,r=`#ifdef CLIPPLANE
+import{a as e,i as ee,n as te,o as ne,r as re,t as ie}from"./mainUVVaryingDeclaration-DyyL2EB7.js";import{t}from"./index-0zCHi22J.js";var n=`clipPlaneFragmentDeclaration`,r=`#ifdef CLIPPLANE
 varying float fClipDistance;
 #endif
 #ifdef CLIPPLANE2

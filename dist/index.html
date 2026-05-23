@@ -6,12 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>icosahedral</title>
     <style>
-      #content {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1em;
-      }
-
       #the-canvas {
         border: 1px solid black;
         height: 600px;
@@ -19,6 +13,7 @@
       }
 
       #params {
+        margin-block: 2em;
         display: grid;
         column-gap: 1em;
         row-gap: 0.5em;
@@ -32,36 +27,47 @@
         }
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-D8tAAHAt.js"></script>
+    <script type="module" crossorigin src="./assets/index-0zCHi22J.js"></script>
   </head>
   <body>
     <h1>Some polyhedra with icosahedral symmetry</h1>
-    <div id="content">
-      <canvas id="the-canvas"></canvas>
-      <div id="params">
-        <label for="figure">figure</label>
-        <select id="figure">
-          <option selected>icosahedron</option>
-          <option>dodecahedron</option>
-        </select>
-        <span></span>
+    <p>
+      Inspired by <a
+        href="https://mathstodon.xyz/@johncarlosbaez/116589957362204579"
+      >this thread by John Carlos Baez</a>
+      and <a
+        href="https://mathstodon.xyz/@tpfto/116599961926950250"
+      >this thread by J.M.</a>
+    </p>
+    <p>
+      Use the UI widgets to define the scene
+      and the mouse to rotate/zoom/move it.
+    </p>
+    <div id="params">
+      <label for="figure">figure</label>
+      <select id="figure">
+        <option selected>icosahedron</option>
+        <option>dodecahedron</option>
+        <option>great dodecahedron</option>
+      </select>
+      <span></span>
 
-        <label for="transform">transform</label>
-        <input id="transform" type="range" min="0" max="1" step="any" value="0">
-        <output id="transform-out"></output>
+      <label for="transform">transform</label>
+      <input id="transform" type="range" min="0" max="1" step="any" value="0">
+      <output id="transform-out"></output>
 
-        <label for="edges">edges</label>
-        <input id="edges" type="checkbox" checked>
-        <span></span>
+      <label for="edges">edges</label>
+      <input id="edges" type="checkbox" checked>
+      <span></span>
 
-        <label for="faces">faces</label>
-        <input id="faces" type="checkbox" checked>
-        <span></span>
+      <label for="faces">faces</label>
+      <input id="faces" type="checkbox" checked>
+      <span></span>
 
-        <label for="axes">axes</label>
-        <input id="axes" type="checkbox">
-        <span></span>
-      </div>
+      <label for="axes">axes</label>
+      <input id="axes" type="checkbox">
+      <span></span>
     </div>
+    <canvas id="the-canvas"></canvas>
   </body>
 </html>
