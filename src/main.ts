@@ -32,24 +32,13 @@ const facesSig = checkboxSig("#faces");
 const axesSig = checkboxSig("#axes");
 
 
+const tween = (a: number, b: number) =>
+  a * (1 - transformSig.value) + b * transformSig.value;
+const signs = [1, -1];
+const signed = (value: number) => signs.map(sgn => sgn * value);
 const r5 = Math.sqrt(5);
-const φ    = 0.5 * (r5 + 1);
-const φRev = 0.5 * (-r5 + 1);
-const φSig = S.computed(() =>
-  transformSig.value       * φRev +
-  (1 - transformSig.value) * φ
-);
-
-// We do not compute φInvSig as 1 / φSig using the interpolated value φSig.
-// We rather interpolate it linearly between 1 / φ and 1 / φRev.
-// This ensures that vertices move linearly as well.
-// TODO Compute each vertex twice, namely based on φ and φRev.  Then perform a
-// linear interpolation between these two vertices (using some Babylon helper function).
-// For this showPolyhedron takes a function 
-const φInvSig = S.computed(() =>
-  transformSig.value       / φRev +
-  (1 - transformSig.value) / φ
-);
+const φ       = 0.5 * (1 + r5);
+const φtransformed = 0.5 * (1 - r5);
 
 
 type V3 = B.Vector3;
@@ -123,24 +112,22 @@ function showEdges(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
   });
 }
 
-const center = (vertices: V3[]): V3 =>
+const getCenter = (vertices: V3[]): V3 =>
   vertices.reduce((sum, vertex) => sum.addInPlace(vertex), V3.Zero())
   .scaleInPlace(1 / vertices.length);
 
 function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: number[][]) {
-  const vertexPositions = () => [
-    ...verticesSig.value.flatMap(v => v.asArray()),
+  const getPositions = () => [
+    ...verticesSig.value,
     // Add the face centers so we can triangulate faces around the centers:
-    ...faces.flatMap(face =>
-      center(face.map(idx => verticesSig.value[idx])).asArray()
-    ),
-  ];
+    ...faces.map(face => getCenter(face.map(idx => verticesSig.value[idx]))),
+  ].flatMap(v => v.asArray());
   asgn(
     new B.Mesh("mesh", scene),
     m => {
       asgn(
         new B.VertexData(), {
-          positions: vertexPositions(),
+          positions: getPositions(),
           indices: faces.flatMap((face, j) => {
             const center = verticesSig.value.length + j;
             return Array.from(face, (_, i) => [
@@ -153,7 +140,7 @@ function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
       ).applyToMesh(m, true);
       S.effect(() => { m.isVisible = sig.value && facesSig.value; });
       S.effect(() => {
-        m.updateVerticesData(B.VertexBuffer.PositionKind, vertexPositions());
+        m.updateVerticesData(B.VertexBuffer.PositionKind, getPositions());
       });
     },
     {material},
@@ -177,8 +164,8 @@ function showPolyhedron(name: string, verticesSig: S.Signal<V3[]>, faces: number
 showPolyhedron(
   "icosahedron",
   S.computed(() =>
-    [1, -1].flatMap(a =>
-      [φSig.value, -φSig.value].flatMap(b => [
+    signs.flatMap(a =>
+      signed(tween(φ, φtransformed)).flatMap(b => [
         v3(a, b, 0),
         v3(0, a, b),
         v3(b, 0, a),
@@ -217,16 +204,16 @@ showPolyhedron(
   "dodecahedron",
   S.computed(() => [
     ... // 0..7
-    [1, -1].flatMap(a =>
-      [1, -1].flatMap(b =>
-        [1, -1].flatMap(c =>
+    signs.flatMap(a =>
+      signs.flatMap(b =>
+        signs.flatMap(c =>
           v3(a, b, c),
         )
       )
     ),
     ... // 8..19
-    [φInvSig.value, -φInvSig.value].flatMap(a =>
-      [φSig.value, -φSig.value].flatMap(b => [
+    signed(-tween(φtransformed, φ)).flatMap(a =>
+      signed(tween(φ, φtransformed)).flatMap(b => [
         v3(a, 0, b),
         v3(b, a, 0),
         v3(0, b, a),
