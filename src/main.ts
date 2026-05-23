@@ -1,6 +1,16 @@
-import * as B from "@babylonjs/core";
+import * as B from "@babylonjs/core/pure";
 import * as S from "@preact/signals";
 import asgn from "./asgn";
+
+
+// Importing the "pure" version of BabylonJS above improves tree shaking of the
+// production build but requires explicit calls to some "impure" registration
+// functions.  The currently used Babylon features need these registrations:
+B.RegisterCoreEngineExtensions();
+B.RegisterEngineUniformBuffer();
+// More sloppily (including a bit of unused code) we could use:
+// B.RegisterStandardEngineExtensions();
+
 
 function selectSig(selectors: string) {
   const el = document.querySelector<HTMLSelectElement>(selectors)!;
