@@ -74,6 +74,7 @@ asgn(new B.PointLight("light4", v3(-10, -10,  10), scene), {intensity: .7});
 
 const material = asgn(
   new B.StandardMaterial("mat", scene), {
+    backFaceCulling: false,
     diffuseColor: B.Color3.White(),
   },
 );
@@ -160,7 +161,7 @@ function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
 function showPolyhedron(name: string, verticesSig: S.Signal<V3[]>, faces: number[][]) {
   // console.log(
   //   name + "\n" +
-  //   vertices.map((v, i) =>
+  //   verticesSig.value.map((v, i) =>
   //     i.toString().padStart(2) + ":" +
   //     v.asArray().map(a => a.toFixed(1).padStart(6)).join("")
   //   ).join("\n"),
@@ -171,44 +172,44 @@ function showPolyhedron(name: string, verticesSig: S.Signal<V3[]>, faces: number
   showFaces(sig, verticesSig, faces);
 }
 
-showPolyhedron(
-  "icosahedron",
-  S.computed(() =>
-    signs.flatMap(a =>
-      signed(tween(φ, φtransformed)).flatMap(b => [
-        v3(a, b, 0),
-        v3(0, a, b),
-        v3(b, 0, a),
-      ])
-    ),
+const icoVertices = S.computed(() =>
+  signs.flatMap(a =>
+    signed(tween(φ, φtransformed)).flatMap(b => [
+      v3(a, b, 0),
+      v3(0, a, b),
+      v3(b, 0, a),
+    ])
   ),
-  // TODO generate faces sytematically?
-  [
-    [0,2,1],
-    [0,4,8],
-    [7,2,3],
-    [6,1,5],
-    [4,6,11],
-    [8,10,3],
-    [9,5,7],
-    [9,10,11],
-
-    [2,0,8],
-    [2,8,3],
-    [5,11,6],
-    [5,9,11],
-
-    [0,1,6],
-    [0,6,4],
-    [3,9,7],
-    [3,10,9],
-
-    [1,2,7],
-    [1,7,5],
-    [4,10,8],
-    [4,11,10],
-  ],
 );
+
+// TODO generate faces sytematically?
+const icoFaces = [
+  [0,2,1],
+  [0,4,8],
+  [7,2,3],
+  [6,1,5],
+  [4,6,11],
+  [8,10,3],
+  [9,5,7],
+  [9,10,11],
+
+  [2,0,8],
+  [2,8,3],
+  [5,11,6],
+  [5,9,11],
+
+  [0,1,6],
+  [0,6,4],
+  [3,9,7],
+  [3,10,9],
+
+  [1,2,7],
+  [1,7,5],
+  [4,10,8],
+  [4,11,10],
+];
+
+showPolyhedron("icosahedron", icoVertices, icoFaces);
 
 showPolyhedron(
   "dodecahedron",
@@ -249,8 +250,28 @@ showPolyhedron(
   ],
 );
 
-// TODO more shapes
-// (in particular some other stellated icosahedron; same vertices but different triangles)
+const icoFaceRotations = icoFaces.flatMap(([a,b,c]) =>
+  [[a,b,c], [b,c,a], [c,a,b]] as [number, number, number][]
+);
+// For each of the 12 icosahedron vertices the pentagon of its 5 neighbors:
+const great12hedronFaces = Array.from({length: 12}, (_, i) => {
+  const [firstEdge, ...moreEdges] =
+    icoFaceRotations.flatMap(([a,b,c]) =>
+      a === i ? [[b,c] as [number, number]] : []
+    );
+  const face = firstEdge;
+  while (face.length < 5) {
+    face.push(moreEdges.find(([b]) => b === face.at(-1))![1]);
+  }
+  if (!moreEdges.find(([b,c]) => b === face.at(-1) && c === face[0])) {
+    console.warn("great dodecahedron: face not closed", face);
+  }
+  return face;
+});
+
+showPolyhedron("great dodecahedron", icoVertices, great12hedronFaces);
+
+// TODO more shapes?
 
 
 const axisShape = [
