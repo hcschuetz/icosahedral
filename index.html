@@ -68,6 +68,48 @@
       <span></span>
     </div>
     <canvas id="the-canvas"></canvas>
+    <h2>Implementation Notes</h2>
+    <ul>
+      <li>
+        The lighting of the scene should be improved while keeping the number
+        of lights small, so that also low-end graphics hardware can handle them.
+      </li>
+      <li>
+        Only the edges used in the construction of the polyhedra and their faces
+        are displayed.
+        The implicit edges at intersecting faces are omitted.
+        As a consequence, the great dodecahedron shows the same edges as the plain
+        icosahedron.
+        The same holds for their transformed versions.
+      </li>
+      <li>
+        While the dodecahedron and its fully transformed variant have planar
+        faces (pentagons or pentagrams), the faces of the intermediate
+        polyhedra are not planar.
+        Thus there is no canonical way to draw these faces.
+        My solution is to triangulate a pentagon around its center
+        (which is computed as the average of the 5 vertices).
+      </li>
+    </ul>
+    <h2>Geometry Notes</h2>
+    <ul>
+      <li>
+        The icosahedron becomes a cuboctahedron with transformation parameter
+        (1 - 1 / √5) / 2 ≈ 0.276
+        and an octahedron with (1 + 1 / √5) / 2 ≈ 0.724.
+      </li>
+      <li>
+        At (1 - 1 / √5) / 2 ≈ 0.276
+        the dodecahedron edges (without faces) become two intersecting
+        tetrahedra.
+        At (1 + 1 / √5) / 2 ≈ 0.724 the dodecahedron becomes an interesting
+        figure with cube/octahedral symmetry.
+      </li>
+      <li>
+        Why these transformation parameters?
+        Interpolating between φ and -1/φ with these parameters yields 1 and 0.
+      </li>
+    </ul>
     <script type="module" src="src/main.ts"></script>
   </body>
 </html>
