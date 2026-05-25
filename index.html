@@ -96,8 +96,11 @@
         faces (pentagons or pentagrams), the faces of the intermediate
         polyhedra are not planar.
         Thus there is no canonical way to draw these faces.
-        My solution is to triangulate a pentagon around its center
-        (which is computed as the average of the 5 vertices).
+        My solution is to triangulate a pentagon around its center,
+        actually the gravicenter of the 5 edges.
+        (Using the edge center instead of the vertex center has the advantage
+        that it fits with the "intuitive" center even when two vertices
+        coincide, degenerating the pentagon to a quadrangle.)
       </li>
     </ul>
     <h2>Geometry Notes</h2>

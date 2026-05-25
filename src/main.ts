@@ -134,9 +134,19 @@ function showEdges(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
   });
 }
 
-const getCenter = (vertices: V3[]): V3 =>
-  vertices.reduce((sum, vertex) => sum.addInPlace(vertex), V3.Zero())
-  .scaleInPlace(1 / vertices.length);
+const distance = (a: V3, b: V3) => a.subtract(b).length();
+
+const getCenter = (vertices: V3[]): V3 => vertices.reduce(
+    (sum, vertex, i) =>
+      sum.addInPlace(vertex.add(vertices.at(i-1)!).scale(
+        0.5 * distance(vertex, vertices.at(i-1)!)
+      )),
+    V3.Zero(),
+  ).scaleInPlace(1 / vertices.reduce(
+    (sum, vertex, i) => sum + distance(vertex, vertices.at(i-1)!),
+    0,
+  ),
+);
 
 function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: number[][]) {
   const getPositions = () => [
