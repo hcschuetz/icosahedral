@@ -72,10 +72,16 @@ asgn(new B.PointLight("light2", v3( 10, -10, -10), scene), {intensity: .7});
 asgn(new B.PointLight("light3", v3(-10,  10, -10), scene), {intensity: .7});
 asgn(new B.PointLight("light4", v3(-10, -10,  10), scene), {intensity: .7});
 
-const material = asgn(
+const edgeMaterial = asgn(
+  new B.StandardMaterial("mat", scene), {
+    diffuseColor: B.Color3.Red(),
+  },
+);
+
+const faceMaterial = asgn(
   new B.StandardMaterial("mat", scene), {
     backFaceCulling: false,
-    diffuseColor: B.Color3.White(),
+    specularColor: B.Color3.FromHSV(0, 0, .85),
   },
 );
 
@@ -90,7 +96,7 @@ function showVertices(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>) {
         S.effect(() => { s.position = verticesSig.value[i]; });
         S.effect(() => { s.isVisible = sig.value && edgesSig.value; })
       },
-      {material},
+      {material: edgeMaterial},
     );
   });
 }
@@ -109,7 +115,7 @@ function showEdges(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
         radius: 0.02,
         updatable: true,
       }),
-      {material},
+      {material: edgeMaterial},
       t => {
         S.effect(() => { t.isVisible = sig.value && edgesSig.value; });
         S.effect(() => {
@@ -154,7 +160,7 @@ function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
         m.updateVerticesData(B.VertexBuffer.PositionKind, getPositions());
       });
     },
-    {material},
+    {material: faceMaterial},
   );
 }
 
