@@ -54,6 +54,8 @@ const φtransformed = 0.5 * (1 - r5);
 type V3 = B.Vector3;
 const V3 = B.Vector3;
 const v3 = (x: number, y: number, z: number) => new V3(x, y, z);
+const interpolateV3 = (a: V3, b: V3, λ: number) =>
+  a.scaleAndAddToRef(1-λ, b.scale(λ));
 
 
 const canvasEl = document.querySelector<HTMLCanvasElement>("#the-canvas")!;
@@ -180,13 +182,13 @@ function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
 }
 
 function showPolyhedron(name: string, verticesSig: S.Signal<V3[]>, faces: number[][]) {
-  // console.log(
-  //   name + "\n" +
-  //   verticesSig.value.map((v, i) =>
-  //     i.toString().padStart(2) + ":" +
-  //     v.asArray().map(a => a.toFixed(1).padStart(6)).join("")
-  //   ).join("\n"),
-  // );
+  console.log(
+    name + "\n" +
+    verticesSig.value.map((v, i) =>
+      i.toString().padStart(2) + ":" +
+      v.asArray().map(a => a.toFixed(1).padStart(6)).join("")
+    ).join("\n"),
+  );
   const sig = S.computed(() => figureSig.value === name);
   showVertices(sig, verticesSig);
   showEdges(sig, verticesSig, faces);
@@ -291,6 +293,51 @@ const great12hedronFaces = Array.from({length: 12}, (_, i) => {
 });
 
 showPolyhedron("great dodecahedron", icoVertices, great12hedronFaces);
+
+
+const w1 = 1/3, w2 = 2/3;
+
+// Each vertex is generated once for each adjacent face.
+// For now I am too lazy to collapse them.
+const sbVertices = S.computed<B.Vector3[]>(() => {
+  const ivv = icoVertices.value;
+  return [
+    ...icoFaces.flatMap(face => {
+      const [a, b, c] = face.map(idx => ivv[idx]);
+      return [
+        interpolateV3(a, b, w1),
+        interpolateV3(a, b, w2),
+        interpolateV3(b, c, w1),
+        interpolateV3(b, c, w2),
+        interpolateV3(c, a, w1),
+        interpolateV3(c, a, w2),
+      ];
+    }),
+    ...Array.from({length: 12}, (_, i) =>
+      icoFaceRotations.flatMap(([a, b]) =>
+        a === i ? [interpolateV3(ivv[a], ivv[b], w1)] : []
+      )
+    ).flat()
+  ];
+});
+
+const sbFaces: number[][] = [
+  ...icoFaces.map((_, i) => Array.from({length: 6}, (_, j) => 6*i + j)),
+  [120, 123, 124, 121, 122],
+  [125, 128, 129, 126, 127],
+  [130, 134, 131, 133, 132],
+  [135, 138, 139, 136, 137],
+  [140, 143, 144, 141, 142],
+  [145, 147, 148, 146, 149],
+  [150, 153, 154, 151, 152],
+  [155, 158, 159, 156, 157],
+  [160, 162, 163, 161, 164],
+  [165, 168, 169, 166, 167],
+  [170, 173, 174, 171, 172],
+  [175, 177, 178, 176, 179],
+];
+
+showPolyhedron("soccer ball", sbVertices, sbFaces);
 
 // TODO more shapes?
 
