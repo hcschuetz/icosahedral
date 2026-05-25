@@ -1,0 +1,1 @@
+This is the source code for https://hcschuetz.github.io/icosahedral/dist/.
