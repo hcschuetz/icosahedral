@@ -47,7 +47,7 @@ const tween = (a: number, b: number) =>
 const signs = [1, -1];
 const signed = (value: number) => signs.map(sgn => sgn * value);
 const r5 = Math.sqrt(5);
-const φ       = 0.5 * (1 + r5);
+const φ            = 0.5 * (1 + r5);
 const φtransformed = 0.5 * (1 - r5);
 
 
