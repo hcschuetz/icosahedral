@@ -6,10 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>icosahedral</title>
     <style>
+      html {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      body {
+        margin-inline: auto;
+        padding: 10px;
+        max-width: 600px;
+      }
+
       #the-canvas {
         border: 1px solid black;
-        height: 600px;
-        width: 600px;
+        width: min(600px, 100%);
+        aspect-ratio: 1;
       }
 
       #params {
@@ -17,14 +26,18 @@
         display: grid;
         column-gap: 1em;
         row-gap: 0.5em;
-        grid-template-columns: repeat(3, max-content);
+        grid-template-columns: max-content 1fr max-content;
         align-items: start;
         align-content: start;
         justify-content: start;
         justify-items: start;
         > input[type=range] {
-          width: 400px;
+          width: 100%;
         }
+      }
+
+      li {
+        margin-block: 1ex;
       }
     </style>
   </head>
