@@ -66,22 +66,27 @@ asgn(new B.ArcRotateCamera("camera", 0, 0, 0, V3.ZeroReadOnly, scene), c => {
   c.attachControl(canvasEl);
 }, {lowerRadiusLimit: 1});
 
-// asgn(new B.HemisphericLight("light", v3(0, 1, 0), scene), {intensity: 1});
-asgn(new B.PointLight("light1", v3( 10,  10,  10), scene), {intensity: .7});
-asgn(new B.PointLight("light2", v3( 10, -10, -10), scene), {intensity: .7});
-asgn(new B.PointLight("light3", v3(-10,  10, -10), scene), {intensity: .7});
-asgn(new B.PointLight("light4", v3(-10, -10,  10), scene), {intensity: .7});
+[
+  [ 10,  10,  10,  .3, .3, .3],
+  [ 10, -10, -10,  .9, .3, .3],
+  [-10,  10, -10,  .3, .9, .3],
+  [-10, -10,  10,  .3, .3, .9],
+].forEach(([x,y,z,r,g,b], i) => {
+  asgn(new B.PointLight("light" + i, v3(x,y,z), scene), {
+    diffuse: new B.Color3(r,g,b)
+  });
+})
 
 const edgeMaterial = asgn(
   new B.StandardMaterial("mat", scene), {
-    diffuseColor: B.Color3.Red(),
+    diffuseColor: B.Color3.Black(),
+    emissiveColor: B.Color3.Gray(),
   },
 );
 
 const faceMaterial = asgn(
   new B.StandardMaterial("mat", scene), {
     backFaceCulling: false,
-    specularColor: B.Color3.FromHSV(0, 0, .85),
   },
 );
 
@@ -296,10 +301,10 @@ const axisShape = [
       radiusFunction: i => axisShape[i][1],
     }, scene),
     {
-      material: asgn(
-        new B.StandardMaterial("axisMat" + j, scene),
-        {diffuseColor: new B.Color3(dir.x, dir.y, dir.z)},
-      ),
+      material: asgn(new B.StandardMaterial("axisMat" + j, scene), {
+        diffuseColor: B.Color3.Black(),
+        emissiveColor: new B.Color3(dir.x, dir.y, dir.z),
+      }),
     },
     a => { S.effect(() => {a.isVisible = axesSig.value}); },
   );
