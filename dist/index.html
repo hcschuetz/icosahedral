@@ -40,7 +40,7 @@
         margin-block: 1ex;
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-DP6kknzB.js"></script>
+    <script type="module" crossorigin src="./assets/index-FlIYDRn1.js"></script>
   </head>
   <body>
     <h1>Some polyhedra with icosahedral symmetry</h1>
@@ -85,10 +85,6 @@
     <h2>Implementation Notes</h2>
     <ul>
       <li>
-        The lighting of the scene should be improved while keeping the number
-        of lights small, so that also low-end graphics hardware can handle them.
-      </li>
-      <li>
         Only the edges used in the construction of the polyhedra and their faces
         are displayed.
         The implicit edges at intersecting faces are omitted.
@@ -101,8 +97,11 @@
         faces (pentagons or pentagrams), the faces of the intermediate
         polyhedra are not planar.
         Thus there is no canonical way to draw these faces.
-        My solution is to triangulate a pentagon around its center
-        (which is computed as the average of the 5 vertices).
+        My solution is to triangulate a pentagon around its center,
+        actually the gravicenter of the 5 edges.
+        (Using the edge center instead of the vertex center has the advantage
+        that it fits with the "intuitive" center even when two vertices
+        coincide, degenerating the pentagon to a quadrangle.)
       </li>
     </ul>
     <h2>Geometry Notes</h2>
@@ -117,11 +116,13 @@
         the dodecahedron edges (without faces) become two intersecting
         tetrahedra.
         At (1 + 1 / √5) / 2 ≈ 0.724 the dodecahedron becomes an interesting
-        figure with cube/octahedral symmetry.
+        figure with (almost) cube/octahedral symmetry.
       </li>
       <li>
         Why these transformation parameters?
-        Interpolating between φ and -1/φ with these parameters yields 1 and 0.
+        Interpolating linearly between φ and -1/φ with these parameters
+        yields 1 and 0.
+        This makes certain vertices collapse.
       </li>
     </ul>
   </body>

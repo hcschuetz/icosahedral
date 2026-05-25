@@ -1,4 +1,4 @@
-import{a as e,i as ee,n as te,o as ne,r as re,t as ie}from"./mainUVVaryingDeclaration-CFc1-skW.js";import{t}from"./index-DP6kknzB.js";var n=`logDepthFragment`,r=`#ifdef LOGARITHMICDEPTH
+import{a as e,i as ee,n as te,o as ne,r as re,t as ie}from"./mainUVVaryingDeclaration-D3F8DzQo.js";import{t}from"./index-FlIYDRn1.js";var n=`logDepthFragment`,r=`#ifdef LOGARITHMICDEPTH
 fragmentOutputs.fragDepth=log2(fragmentInputs.vFragmentDepth)*uniforms.logarithmicDepthConstant*0.5;
 #endif
 `;t.IncludesShadersStoreWGSL[n]||(t.IncludesShadersStoreWGSL[n]=r);var ae={name:n,shader:r},i=`fogFragment`,a=`#ifdef FOG
