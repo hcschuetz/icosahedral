@@ -1,4 +1,4 @@
-import{t as e}from"./index-DtAyDkWs.js";var t=`sceneUboDeclaration`,n=`struct Scene {viewProjection : mat4x4<f32>,
+import{t as e}from"./index-CfLm7385.js";var t=`sceneUboDeclaration`,n=`struct Scene {viewProjection : mat4x4<f32>,
 #ifdef MULTIVIEW
 viewProjectionR : mat4x4<f32>,
 #endif 

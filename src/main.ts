@@ -182,13 +182,13 @@ function showFaces(sig: S.Signal<boolean>, verticesSig: S.Signal<V3[]>, faces: n
 }
 
 function showPolyhedron(name: string, verticesSig: S.Signal<V3[]>, faces: number[][]) {
-  console.log(
-    name + "\n" +
-    verticesSig.value.map((v, i) =>
-      i.toString().padStart(2) + ":" +
-      v.asArray().map(a => a.toFixed(1).padStart(6)).join("")
-    ).join("\n"),
-  );
+  // console.log(
+  //   name + "\n" +
+  //   verticesSig.value.map((v, i) =>
+  //     i.toString().padStart(2) + ":" +
+  //     v.asArray().map(a => a.toFixed(1).padStart(6)).join("")
+  //   ).join("\n"),
+  // );
   const sig = S.computed(() => figureSig.value === name);
   showVertices(sig, verticesSig);
   showEdges(sig, verticesSig, faces);
