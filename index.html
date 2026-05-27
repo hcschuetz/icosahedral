@@ -31,7 +31,8 @@
         align-content: start;
         justify-content: start;
         justify-items: start;
-        > input[type=range] {
+
+        input[type=range] {
           width: 100%;
         }
       }
@@ -67,6 +68,12 @@
         <option>soccer ball</option>
       </select>
       <span></span>
+
+      <div id="truncation-row" style="display: contents;">
+        <label for="truncation">truncation</label>
+        <input id="truncation" type="range" min="0" max="0.5" step="any" value="0.333">
+        <output id="truncation-out"></output>
+      </div>
 
       <label for="transform">transform</label>
       <input id="transform" type="range" min="0" max="1" step="any" value="0">
@@ -110,22 +117,35 @@
     <h2>Geometry Notes</h2>
     <ul>
       <li>
-        The icosahedron becomes a cuboctahedron with transformation parameter
-        (1 - 1 / √5) / 2 ≈ 0.276
-        and an octahedron with (1 + 1 / √5) / 2 ≈ 0.724.
-      </li>
-      <li>
-        At (1 - 1 / √5) / 2 ≈ 0.276
-        the dodecahedron edges (without faces) become two intersecting
-        tetrahedra.
-        At (1 + 1 / √5) / 2 ≈ 0.724 the dodecahedron becomes an interesting
-        figure with (almost) cube/octahedral symmetry.
-      </li>
-      <li>
-        Why these transformation parameters?
-        Interpolating linearly between φ and -1/φ with these parameters
+        Linear interpolation between φ and -1/φ with parameters
+        (1 - 1 / √5) / 2 ≈ 0.276 and (1 + 1 / √5) / 2 ≈ 0.724
         yields 1 and 0.
-        This makes certain vertices collapse.
+        This makes certain vertices collapse
+        and the figures get (almost) cubic/octahedral symmetry.
+      </li>
+      <li>
+        The soccer ball is constructed from the icosahedron by cutting off
+        1/3 of each end of each edge
+        and by connecting the 5 new vertices around each original vertex.
+        <br>
+        I have made the truncation configurable (between 0 and 1/2) so that
+        there is a continuous transition
+        icosahedron&ndash;soccerball&ndash;icosidodecahedron.
+        <br>
+        With the fully transformed soccerball vary the truncation between 0 and 1/3
+        to see truncation of a great icosahedron.
+      </li>
+      <li>
+        TODO: More polyhedra with φ occurring in the cartesian coordinates,
+        for example:
+        <ul>
+          <li>The rhombic triacontahedron</li>
+          <li>
+            A transition
+            dodecahedron&ndash;truncated dodecahedron&ndash;icosidodecahedron
+            analogous to the soccerball transition above
+          </li>
+        </ul>
       </li>
     </ul>
     <script type="module" src="src/main.ts"></script>

@@ -33,10 +33,23 @@ function checkboxSig(selectors: string) {
   return sig;
 }
 
+
 const figureSig = selectSig("#figure");
+
+const truncationSig = rangeSig("#truncation");
+const truncationOut = document.querySelector<HTMLOutputElement>("#truncation-out")!;
+S.effect(() => { truncationOut.value = truncationSig.value.toFixed(3); });
+S.effect(() => {
+  document.querySelector<HTMLInputElement>("#truncation")!.disabled =
+    figureSig.value !== "soccer ball";
+  document.querySelector<HTMLInputElement>("#truncation-row")!.style.color =
+    figureSig.value === "soccer ball" ? "inherit" : "grey";
+});
+
 const transformSig = rangeSig("#transform");
 const transformOut = document.querySelector<HTMLOutputElement>("#transform-out")!;
 S.effect(() => { transformOut.value = transformSig.value.toFixed(3); });
+
 const edgesSig = checkboxSig("#edges");
 const facesSig = checkboxSig("#faces");
 const axesSig = checkboxSig("#axes");
@@ -295,27 +308,26 @@ const great12hedronFaces = Array.from({length: 12}, (_, i) => {
 showPolyhedron("great dodecahedron", icoVertices, great12hedronFaces);
 
 
-const w1 = 1/3, w2 = 2/3;
-
 // Each vertex is generated once for each adjacent face.
 // For now I am too lazy to collapse them.
 const sbVertices = S.computed<B.Vector3[]>(() => {
+  const truncation1 = truncationSig.value, truncation2 = 1 - truncation1;
   const ivv = icoVertices.value;
   return [
     ...icoFaces.flatMap(face => {
       const [a, b, c] = face.map(idx => ivv[idx]);
       return [
-        interpolateV3(a, b, w1),
-        interpolateV3(a, b, w2),
-        interpolateV3(b, c, w1),
-        interpolateV3(b, c, w2),
-        interpolateV3(c, a, w1),
-        interpolateV3(c, a, w2),
+        interpolateV3(a, b, truncation1),
+        interpolateV3(a, b, truncation2),
+        interpolateV3(b, c, truncation1),
+        interpolateV3(b, c, truncation2),
+        interpolateV3(c, a, truncation1),
+        interpolateV3(c, a, truncation2),
       ];
     }),
     ...Array.from({length: 12}, (_, i) =>
       icoFaceRotations.flatMap(([a, b]) =>
-        a === i ? [interpolateV3(ivv[a], ivv[b], w1)] : []
+        a === i ? [interpolateV3(ivv[a], ivv[b], truncation1)] : []
       )
     ).flat()
   ];
