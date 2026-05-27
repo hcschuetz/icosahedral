@@ -41,9 +41,9 @@ const truncationOut = document.querySelector<HTMLOutputElement>("#truncation-out
 S.effect(() => { truncationOut.value = truncationSig.value.toFixed(3); });
 S.effect(() => {
   document.querySelector<HTMLInputElement>("#truncation")!.disabled =
-    figureSig.value !== "soccer ball";
+    figureSig.value !== "icosahedron";
   document.querySelector<HTMLInputElement>("#truncation-row")!.style.color =
-    figureSig.value === "soccer ball" ? "inherit" : "grey";
+    figureSig.value === "icosahedron" ? "inherit" : "grey";
 });
 
 const transformSig = rangeSig("#transform");
@@ -245,7 +245,6 @@ const icoFaces = [
   [4,11,10],
 ];
 
-showPolyhedron("icosahedron", icoVertices, icoFaces);
 
 showPolyhedron(
   "dodecahedron",
@@ -307,6 +306,7 @@ const great12hedronFaces = Array.from({length: 12}, (_, i) => {
 
 showPolyhedron("great dodecahedron", icoVertices, great12hedronFaces);
 
+// "sb" stands for "soccerball"
 
 // Each vertex is generated once for each adjacent face.
 // For now I am too lazy to collapse them.
@@ -349,7 +349,7 @@ const sbFaces: number[][] = [
   [175, 177, 178, 176, 179],
 ];
 
-showPolyhedron("soccer ball", sbVertices, sbFaces);
+showPolyhedron("icosahedron", sbVertices, sbFaces);
 
 // TODO more shapes?
 
