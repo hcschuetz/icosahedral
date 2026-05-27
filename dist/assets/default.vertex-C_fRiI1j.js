@@ -1,4 +1,4 @@
-import{a as e,i as ee,n as te,o as ne,r as re,t as ie}from"./mainUVVaryingDeclaration-Bwkj2yHX.js";import{t}from"./index-CfLm7385.js";var n=`bonesDeclaration`,r=`#if NUM_BONE_INFLUENCERS>0
+import{a as e,i as ee,n as te,o as ne,r as re,t as ie}from"./mainUVVaryingDeclaration-uW8wfhO8.js";import{t}from"./index-ynopdZp8.js";var n=`bonesDeclaration`,r=`#if NUM_BONE_INFLUENCERS>0
 #ifndef USE_VERTEX_PULLING
 attribute matricesIndices : vec4f;attribute matricesWeights : vec4f;
 #if NUM_BONE_INFLUENCERS>4
