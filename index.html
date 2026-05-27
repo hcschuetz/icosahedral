@@ -43,21 +43,36 @@
     </style>
   </head>
   <body>
-    <h1>Some polyhedra with icosahedral symmetry</h1>
+    <h1>Some Polyhedra Involving the Golden Ratio</h1>
     <p>
-      Inspired by <a
-        href="https://mathstodon.xyz/@johncarlosbaez/116589957362204579"
-      >this thread by John Carlos Baez</a>
-      and <a
-        href="https://mathstodon.xyz/@tpfto/116599961926950250"
-      >this thread by 𝓙. 𝓜.</a>
+      <i>
+        Inspired by <a
+          href="https://mathstodon.xyz/@johncarlosbaez/116589957362204579"
+        >this thread by John Carlos Baez</a>
+        and <a
+          href="https://mathstodon.xyz/@tpfto/116599961926950250"
+        >this thread by 𝓙. 𝓜.</a>
+      </i>
     </p>
     <p>
-      (<a href="https://github.com/hcschuetz/icosahedral">Source</a>)
+      <a href="https://github.com/hcschuetz/icosahedral">Source code</a>
     </p>
     <p>
-      Use the UI widgets to define the scene
-      and the mouse to rotate/zoom/move it.
+      Various (more or less) regular polyhedra have the golden ratio
+      φ = (1 + √5)/2 in their "natural" cartesian coordinates.
+      We can replace each occurrence of φ with (1 - √5)/2 = -1/φ,
+      yielding another polyhedron.
+    </p>
+    <p>
+      In this application you can interpolate between
+      corresponding vertex positions of these two polyhedra.
+      This might help to understand the relationship between the
+      original solid and the transformed version.
+    </p>
+
+    <h2>Select and Display a Polyhedron</h2>
+    <p>
+      Hint: Use the mouse to rotate/zoom the scene.
     </p>
     <div id="params">
       <label for="figure">base solid</label>
